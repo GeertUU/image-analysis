@@ -7,6 +7,27 @@ Set of functions for dealing with image data based around the python packages op
 - Version: 1.0.0
 
 
+## Installation
+
+### PIP
+This package can be installed directly from GitHub using pip:
+```
+pip install git+https://github.com/GeertUU/image-analysis
+```
+### Anaconda
+When using the Anaconda distribution, it is safer to run the conda version of pip as follows:
+```
+conda install pip
+conda install git
+pip install git+https://github.com/GeertUU/image-analysis
+```
+### Updating
+To update to the most recent version, use `pip install` with the `--upgrade` flag set:
+```
+pip install --upgrade git+https://github.com/GeertUU/image-analysis
+```
+
+
 ## Usage
 ### Image analysis
 #### Realspace
