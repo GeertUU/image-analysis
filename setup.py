@@ -14,11 +14,9 @@ setup(
     
     install_requires=[
         'numpy',
-        'operator',
         'scipy',
         'matplotlib',
         'opencv-python',
         'trackpy',
-        'os',
     ],
 )
