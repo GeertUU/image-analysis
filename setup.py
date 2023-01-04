@@ -13,7 +13,7 @@ setup(
     packages=find_packages(include=["imageAnalysis", "imageAnalysis.*"]),
     
     install_requires=[
-        "numpy>=1.19.2",
+        'numpy',
         'operator',
         'scipy',
         'matplotlib',
