@@ -1,4 +1,4 @@
-__version__ = '1.0.1'
+__version__ = '1.0.2'
 
 #from .coordinatefilemaniputlations import coordinateFileManipulation
 #from .calculatesann import calculateSANN, fromfileSANN
@@ -6,11 +6,11 @@ __version__ = '1.0.1'
 
 #make visible for 'from imageAnalysis import *'
 __all__ = [
-    'coordinatefilemaniputlations.coordinateFileManipulation',
-    'calculatesann.calculateSANN',
-    'calculatesann.fromfileSANN',
-    'imagesclass.realspace',
-    'imagesclass.realspacefromfile',
-    'imagesclass.Fourier',
-    'imagesclass.imageframes',
+    '.coordinatefilemaniputlations.coordinateFileManipulation',
+    '.calculatesann.calculateSANN',
+    '.calculatesann.fromfileSANN',
+    '.imagesclass.realspace',
+    '.imagesclass.realspacefromfile',
+    '.imagesclass.Fourier',
+    '.imagesclass.imageframes',
 ]
