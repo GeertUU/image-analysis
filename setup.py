@@ -10,7 +10,7 @@ setup(
     author='Geert',
     author_email='g.h.a.schulpen@uu.nl',
 
-    packages=find_packages(),
+    packages=find_packages(include=["imageAnalysis", "imageAnalysis.*"]),
     
     install_requires=[
         "numpy>=1.19.2",
