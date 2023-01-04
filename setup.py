@@ -13,7 +13,7 @@ setup(
     packages=find_packages(),
     
     install_requires=[
-        'numpy',
+        "numpy>=1.19.2",
         'operator',
         'scipy',
         'matplotlib',
