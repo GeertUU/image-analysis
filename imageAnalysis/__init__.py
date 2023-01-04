@@ -6,11 +6,11 @@ __version__ = '1.0.0'
 
 #make visible for 'from imageAnalysis import *'
 __all__ = [
-    'coordinateFileManipulation',
-    'calculateSANN',
-    'fromfileSANN',
-    'realspace',
-    'realspacefromfile',
-    'Fourier',
-    'imageframes',
+    'coordinatefilemaniputlations.coordinateFileManipulation',
+    'calculatesann.calculateSANN',
+    'calculatesann.fromfileSANN',
+    'imagesclass.realspace',
+    'imagesclass.realspacefromfile',
+    'imagesclass.Fourier',
+    'imagesclass.imageframes',
 ]
