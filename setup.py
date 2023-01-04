@@ -1,10 +1,10 @@
 from setuptools import setup, find_packages
 
-from imageAnalysis import __version__
+
 
 setup(
-    name='imageAnalysis',
-    version=__version__,
+    name = 'imageAnalysis',
+    version = '1.0.3',
 
     url='https://github.com/GeertUU/image-analysis',
     author='Geert',
