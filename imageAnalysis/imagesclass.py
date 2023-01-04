@@ -9,7 +9,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import cv2
 import trackpy as tp
-from calculatesann import calculateSANN
+from .calculatesann import calculateSANN
 import os
 
 #img_gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
