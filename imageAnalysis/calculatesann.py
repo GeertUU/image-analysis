@@ -7,7 +7,7 @@ Created on Wed Jan 12 17:22:42 2022
 
 
 
-from coordinatefilemaniputlations import coordinateFileManipulation
+from .coordinatefilemaniputlations import coordinateFileManipulation
 import numpy as np
 from operator import itemgetter
 
