@@ -5,12 +5,14 @@ Created on Thu Jan 13 14:54:24 2022
 @author: geert
 """
 
+import os
 import numpy as np
+
 import matplotlib.pyplot as plt
 import cv2
 import trackpy as tp
-from .calculatesann import calculateSANN
-import os
+
+from imageAnalysis.calculatesann import calculateSANN
 
 #img_gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
@@ -35,7 +37,7 @@ class realspace:
         self.size = img.shape
         self.original = img.copy()
         self._isbinary = False
-        if len(self.size) ==  2:
+        if len(self.size) == 2:
             self._isgrey = True
         else:
             self._isgrey = False
@@ -53,12 +55,12 @@ class realspace:
         self.img = self.original.copy()
         self.size = self.img.shape
         self._isbinary = False        
-        if len(self.size) ==  2:
+        if len(self.size) == 2:
             self._isgrey = True
         else:
             self._isgrey = False
     
-    def show(self, windowname = "rescaledimage", scale = 0.2):
+    def show(self, windowname="rescaledimage", scale=0.2):
         """
         Resizes and shows image
     
@@ -84,7 +86,7 @@ class realspace:
         cv2.waitKey(0)
         cv2.destroyAllWindows()
         
-    def difference(self, img2, scaleself = -1):
+    def difference(self, img2, scaleself=-1):
         """
         Take out the background
         
@@ -125,7 +127,8 @@ class realspace:
 
         """
         if self._isgrey:
-            raise ValueError('Please do not call a grayscale maker on a grayscale image')
+            raise ValueError('Please do not call a grayscale maker on a'
+                             ' grayscale image')
         self.gray = cv2.cvtColor(self.img, cv2.COLOR_BGR2GRAY)
         self.img = self.gray
         self.size = self.img.shape
@@ -141,11 +144,13 @@ class realspace:
 
         """
         if self._isgrey:
-            raise ValueError('Please do not call a grayscale maker on a grayscale image')
+            raise ValueError('Please do not call a grayscale maker on a'
+                             ' grayscale image')
         self.blue = self.img[:,:,0]
         self.img = self.blue
         self.size = self.img.shape
         self._isgrey = True
+        
     def takegreen(self):
         """
         Takes the green channel from self.img and uses it as a greyscale image
@@ -156,11 +161,13 @@ class realspace:
 
         """
         if self._isgrey:
-            raise ValueError('Please do not call a grayscale maker on a grayscale image')
+            raise ValueError('Please do not call a grayscale maker on a'
+                             ' grayscale image')
         self.green = self.img[:,:,1]
         self.img = self.green
         self.size = self.img.shape
         self._isgrey = True
+        
     def takered(self):
         """
         Takes the red channel from self.img and uses it as a greyscale image
@@ -171,7 +178,8 @@ class realspace:
 
         """
         if self._isgrey:
-            raise ValueError('Please do not call a grayscale maker on a grayscale image')
+            raise ValueError('Please do not call a grayscale maker on a'
+                             ' grayscale image')
         self.red = self.img[:,:,2]
         self.img = self.red
         self.size = self.img.shape
@@ -179,7 +187,7 @@ class realspace:
 
     def discreteFourier(self):
         """
-        Takes the greyscale image and perferoms discrete Fourier transform on it
+        Takes the greyscale image and performs discrete Fourier transform
 
         Returns
         -------
@@ -191,15 +199,16 @@ class realspace:
         if not self._isgrey:
             raise ValueError('please first convert to greyscale image')
         rows, cols = self.size
-        m = cv2.getOptimalDFTSize( rows )
-        n = cv2.getOptimalDFTSize( cols )
-        padded = cv2.copyMakeBorder(self.img, 0, m - rows, 0, n - cols, cv2.BORDER_CONSTANT, value=[0, 0, 0])
-    
+        m = cv2.getOptimalDFTSize(rows)
+        n = cv2.getOptimalDFTSize(cols)
+        padded = cv2.copyMakeBorder(self.img, 0, m - rows, 0, n - cols,
+                                    cv2.BORDER_CONSTANT, value=[0, 0, 0])
+
         planes = [np.float32(padded), np.zeros(padded.shape, np.float32)]
         complexI = cv2.merge(planes)
         cv2.dft(complexI, complexI)
         fourtrans = Fourier(complexI)
-        return(fourtrans)
+        return fourtrans
 
     def convolve(self, kernel):
         """
@@ -234,8 +243,8 @@ class realspace:
         self.blurimg = cv2.blur(self.img, (blursize, blursize))
         self.img = self.blurimg
         
-    def locate(self, size, minMass = None, maxSize = None, dark = False):
-        '''
+    def locate(self, size, minMass=None, maxSize=None, dark=False):
+        """
         Determine the particle coordinates of the image using the trackpy
         tp.locate function, made using version 0.5.0
         http://soft-matter.github.io/trackpy/v0.5.0/generated/trackpy.locate.html#trackpy.locate
@@ -254,7 +263,8 @@ class realspace:
             minmass:
             The minimum integrated brightness. This is a crucial parameter for
             eliminating spurious features. Recommended minimum values are 100
-            for integer images and 1 for float images. Defaults to 0 (no filtering).
+            for integer images and 1 for float images. Defaults to 0 (no 
+            filtering).
         maxSize : FLOAT, optional
             Passed into 'maxsize' parameter of tp.locate. The default is None.
             maxsize:
@@ -269,20 +279,21 @@ class realspace:
         coords : instance of calculateSANN
             Detected particle coordinates in the calculateSANN class.
 
-        '''
+        """
         if not self._isgrey:
             raise ValueError('please first convert to greyscale image')
-        self.locdata = tp.locate(self.img, size, minmass = minMass, maxsize = maxSize, invert = dark)
+        self.locdata = tp.locate(self.img, size, minmass=minMass,
+                                 maxsize=maxSize, invert=dark)
         N = len(self.locdata)
         self.locations = np.zeros((N,2), dtype = 'float')
         for index, (_, loc) in enumerate(self.locdata.T.iteritems()):
             place = [dim for _, dim in loc.iloc[:2].iteritems()]
             self.locations[index] = place
         self.coords = calculateSANN(2, N, (self.size[1], self.size[0]), self.locations.T[[1,0]].T, diameters = [size])
-        return(self.coords)
+        return self.coords
         
         
-    def binarize(self, thresh = 'auto'):
+    def binarize(self, thresh='auto'):
         """
         Splits self.img in 2 groups based on a treshold. Alternatively the 
         treshhold can be determined automatically
@@ -300,9 +311,9 @@ class realspace:
         """
         if not self._isgrey:
             raise ValueError('please first convert to greyscale image')
-        if type(thresh) == str:
-            thresh, _ = cv2.threshold(self.img, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
-        
+        if isinstance(thresh, str):
+            thresh, _ = cv2.threshold(self.img, 0, 255,
+                                      cv2.THRESH_BINARY + cv2.THRESH_OTSU)
         _, self.binary = cv2.threshold(self.img, thresh, 255, cv2.THRESH_BINARY)
         self.img = self.binary
         self._isbinary = True
@@ -312,7 +323,7 @@ class realspace:
     def components(self):
         """
         Finds all separate chunks that have the same intensity value. Makes a 
-        list of all (non-zero) chunks with alle coordinates belonging to the
+        list of all (non-zero) chunks with all coordinates belonging to the
         chunk.
 
         Returns
@@ -326,7 +337,7 @@ class realspace:
         N -= 1
         self.particlelist = [None]*N
         for i, goal in enumerate(self.particlelist):
-            goal = (places == i + 1).nonzero()
+            goal = (places == i+1).nonzero()
             self.particlelist[i] = goal
             
     
@@ -355,7 +366,7 @@ class realspace:
         if xmax > self.size[1]: xmax = self.size[1] 
         if ymax > self.size[0]: ymax = self.size[0]
         
-        self.img = self.img[ymin:ymax,xmin:xmax]
+        self.img = self.img[ymin:ymax, xmin:xmax]
         self.size = self.img.shape
         
     
@@ -394,7 +405,7 @@ class realspacefromfile(realspace):
         """
         self.filename = filename
         self.img = cv2.imread(filename)
-        realspace.__init__(self,self.img)
+        realspace.__init__(self, self.img)
         
         
         
@@ -413,7 +424,8 @@ class Fourier:
         Parameters
         ----------
         data : numpy array (N, M, 2) dtype = numpy.float32
-            Original Fourier transform. Real part in [:,:,0], imaginary part in [:,:,1].
+            Original Fourier transform. Real part in [:,:,0], imaginary part
+            in [:,:,1].
 
         Returns
         -------
@@ -437,15 +449,16 @@ class Fourier:
         self.data = self.original.copy()
         self.size = self.data.shape
         
-    def show(self,  translate = True, logarithm = True, windowname = "Fourier Transform", scale = 0.2):
+    def show(self,  translate=True, logarithm=True,
+             windowname="Fourier Transform", scale=0.2):
         """
         Rescales and shows the magnitude of the Fourier transform
     
         Parameters
         ----------
         complexI : 3d numpy array (>=n, >=m, 2)
-            an array with the real and complex parts of the Fourier Transform of 
-            an image
+            an array with the real and complex parts of the Fourier Transform
+            of an image
         translate : BOOLEAN, optional
             Translate to the middle of the image? The default is True.
         logarithm : BOOLEAN, optional
@@ -469,7 +482,7 @@ class Fourier:
             magnitude = self.reorient(magnitude)
 
         if logarithm:
-            templ = np.ones(shape, dtype = magnitude.dtype)
+            templ = np.ones(shape, dtype=magnitude.dtype)
             logmag = np.log(templ + magnitude)
             magnitude = logmag
         
@@ -479,23 +492,22 @@ class Fourier:
         newwidth = int(shape[0] * scale)
         newheight = int(shape[1] * scale)
         newshape = (newheight, newwidth)
-        resized = cv2.resize(normalization, newshape, interpolation = cv2.INTER_AREA)
+        resized = cv2.resize(normalization, newshape, interpolation=cv2.INTER_AREA)
         
         cv2.imshow(windowname, resized) 
         cv2.waitKey(0)
         cv2.destroyAllWindows()
-        #return(magnitude, normalization, resized)
     
     
-    def save(self, filename, translate = True, logarithm = True):
+    def save(self, filename, translate=True, logarithm=True):
         """
         Rescales and saves the magnitude of the Fourier transform
     
         Parameters
         ----------
         complexI : 3d numpy array (>=n, >=m, 2)
-            an array with the real and complex parts of the Fourier Transform of 
-            an image
+            an array with the real and complex parts of the Fourier Transform
+            of an image
         translate : BOOLEAN, optional
             Translate to the middle of the image? The default is True.
         logarithm : BOOLEAN, optional
@@ -517,7 +529,7 @@ class Fourier:
             magnitude = self.reorient(magnitude)
 
         if logarithm:
-            templ = np.ones(shape, dtype = magnitude.dtype)
+            templ = np.ones(shape, dtype=magnitude.dtype)
             logmag = np.log(templ + magnitude)
             magnitude = logmag
         
@@ -525,8 +537,9 @@ class Fourier:
         cv2.normalize(normalization, normalization, 0, 255, cv2.NORM_MINMAX)
             
         cv2.imwrite(filename, normalization)
+        
     
-    def radialprofile(self, center = None, translate = True, logarithm = True):
+    def radialprofile(self, center=None, translate=True, logarithm=True):
         """
         Calculate the radial average of the magnitude of the transform
 
@@ -582,15 +595,10 @@ class Fourier:
             Realspace instance that is the inverse Fourier transformed of self.data.
     
         """
-        # rows, cols = self.shape[:2]
-        # m = cv2.getOptimalDFTSize( rows )
-        # n = cv2.getOptimalDFTSize( cols )
-        # padded0 = cv2.copyMakeBorder(self.data[:,:,0], 0, m - rows, 0, n - cols, cv2.BORDER_CONSTANT, value=[0, 0, 0])
-        # padded1 = cv2.copyMakeBorder(self.data[:,:,1], 0, m - rows, 0, n - cols, cv2.BORDER_CONSTANT, value=[0, 0, 0])
         
         image = self.data.copy()
         
-        cv2.dft(image, image, flags = (cv2.DFT_INVERSE) )
+        cv2.dft(image, image, flags=(cv2.DFT_INVERSE))
         
         real = np.array(image[:,:,0])
         compl = np.array(image[:,:,1])
@@ -603,10 +611,10 @@ class Fourier:
         
         newimg = realspace(img)
         
-        return(newimg)
+        return newimg
     
 
-    def annulusmask(self, small, big, center = None, inversemask = False):
+    def annulusmask(self, small, big, center=None, inversemask=False):
         """
         Make an anulus mask
 
@@ -639,7 +647,7 @@ class Fourier:
             self.mask = 1 - self.mask
 
 
-    def circlemask(self, center=None, radius=None, insideblack = True):
+    def circlemask(self, center=None, radius=None, insideblack=True):
         """
         Make a circular mask.
     
@@ -651,7 +659,8 @@ class Fourier:
         radius : int, optional
             radius of the circle. The default is None.
         insideblack: Boolean, optional
-            is the inside (True) or the outside (False) black. The default is True
+            is the inside (True) or the outside (False) black.
+            The default is True
     
         Returns
         -------
@@ -694,6 +703,20 @@ class Fourier:
 
     @staticmethod
     def reorient(dataset):
+        """
+        Translate the first 2 axes of an array such that the [0,0] component
+        becomes the middle component
+
+        Parameters
+        ----------
+        dataset : numpy array (2 or more dimensions)
+            Array to be translated.
+
+        Returns
+        -------
+        None.
+
+        """
         shape = dataset.shape
         temp = np.zeros(shape, dtype = dataset.dtype)
         
@@ -704,13 +727,13 @@ class Fourier:
         temp[-center[0]:, :-center[1]] = dataset[:center[0], center[1]:]
         temp[-center[0]:, -center[1]:] = dataset[:center[0], :center[1]]
         
-        return(temp)
+        return temp
     
     
     
     
 class imageframes:
-    def __init__(self, path, namestart, skipfiles = 0):
+    def __init__(self, path, namestart, skipfiles=0):
         self.imgs = []
         self.filenames = []
         for file in os.listdir(path):
@@ -741,12 +764,12 @@ class imageframes:
             img.difference(myback)
     
     
-    def batchlocate(self, size, searchrange, dark = False, mem = 3):
+    def batchlocate(self, size, searchrange, dark=False, mem=3):
         print('load locations')
         frames = [foo.img for foo in self.imgs]
-        self.alllocs = tp.batch(frames, size, invert = dark)
+        self.alllocs = tp.batch(frames, size, invert=dark)
         print('link particles')
-        self.connected = tp.link(self.alllocs, searchrange, memory = mem)
+        self.connected = tp.link(self.alllocs, searchrange, memory=mem)
         print('compute and remove drift')
         self.drift = tp.compute_drift(self.connected)
         self.trajectories = tp.subtract_drift(self.connected.copy(), self.drift)
@@ -755,7 +778,7 @@ class imageframes:
         print('showing trajectories, might be somewhat slow')
         tp.plot_traj(self.trajectories)
 
-    def msd(self, umperpx, fps, minimumlength = -1, show = True):
+    def msd(self, umperpx, fps, minimumlength=-1, show=True):
         if minimumlength < 0:
             minimumlength = len(self.imgs)
         temp = tp.filter_stubs(self.trajectories, minimumlength)
