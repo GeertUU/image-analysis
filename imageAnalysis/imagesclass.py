@@ -12,16 +12,14 @@ import matplotlib.pyplot as plt
 import cv2
 import trackpy as tp
 
-from imageAnalysis.calculatesann import calculateSANN
-
-#img_gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+from imageanalysis.calculatesann import CalculateSANN
 
 
-class realspace:
+class Realspace:
     
     def __init__(self, img):
         """
-        several operations on realspace images
+        Several operations on realspace images.
 
         Parameters
         ----------
@@ -45,7 +43,7 @@ class realspace:
         
     def reset(self):
         """
-        Reset the image to the original input. Also resets some qualifiers
+        Reset the image to the original input. Also reset some qualifiers.
 
         Returns
         -------
@@ -62,7 +60,7 @@ class realspace:
     
     def show(self, windowname="rescaledimage", scale=0.2):
         """
-        Resizes and shows image
+        Resize and show image.
     
         Parameters
         ----------
@@ -86,18 +84,18 @@ class realspace:
         cv2.waitKey(0)
         cv2.destroyAllWindows()
         
-    def difference(self, img2, scaleself=-1):
+    def difference(self, background, scaleself=-1):
         """
-        Take out the background
+        Determine the difference between self.img and a provided image.
         
         Parameters
         ----------
-        background : 1d or 3d numpy array (M, N, (1 or 3)) dtype = float 
+        background : 2d or 3d numpy array (M, N, (1 or 3)) dtype = float 
             The background of the image. Needs to have the same dimensions as
             self.img
         scaleself : FLOAT, optional
             How to rescale self.img. Use -1 to rescale by the mean value of
-            self.img. The default is 0.2.
+            self.img. The default is -1
 
         Returns
         -------
@@ -108,7 +106,7 @@ class realspace:
         if scaleself == -1:
             scaleself = 1/self.img.mean()
         img1 = self.img * scaleself
-        temp = img1 - img2
+        temp = img1 - background
         temp -= temp.min()
         temp *= 255/temp.max()
         
@@ -119,7 +117,7 @@ class realspace:
         
     def makegrayscale(self):
         """
-        Make self.img grayscale using the cv2 COLOR_BGR2GRAY cvtColor method
+        Make self.img grayscale using the cv2 COLOR_BGR2GRAY cvtColor method.
 
         Returns
         -------
@@ -136,7 +134,7 @@ class realspace:
         
     def takeblue(self):
         """
-        Takes the blue channel from self.img and uses it as a greyscale image
+        Take the blue channel from self.img and use it as a greyscale image.
 
         Returns
         -------
@@ -153,7 +151,7 @@ class realspace:
         
     def takegreen(self):
         """
-        Takes the green channel from self.img and uses it as a greyscale image
+        Take the green channel from self.img and use it as a greyscale image.
 
         Returns
         -------
@@ -170,7 +168,7 @@ class realspace:
         
     def takered(self):
         """
-        Takes the red channel from self.img and uses it as a greyscale image
+        Take the red channel from self.img and use it as a greyscale image.
 
         Returns
         -------
@@ -185,9 +183,9 @@ class realspace:
         self.size = self.img.shape
         self._isgrey = True
 
-    def discreteFourier(self):
+    def discretefourier(self):
         """
-        Takes the greyscale image and performs discrete Fourier transform
+        Perform discrete Fourier transform on a grayscale image.
 
         Returns
         -------
@@ -212,7 +210,7 @@ class realspace:
 
     def convolve(self, kernel):
         """
-        Convolves self.img using the given kernel.
+        Convolve self.img with the given kernel.
 
         Parameters
         ----------
@@ -228,7 +226,7 @@ class realspace:
 
     def blur(self, blursize):
         """
-        Blurs self.img using a sqaure kernel of the given size
+        Blur self.img using a sqaure kernel.
 
         Parameters
         ----------
@@ -289,14 +287,14 @@ class realspace:
         for index, (_, loc) in enumerate(self.locdata.T.iteritems()):
             place = [dim for _, dim in loc.iloc[:2].iteritems()]
             self.locations[index] = place
-        self.coords = calculateSANN(2, N, (self.size[1], self.size[0]), self.locations.T[[1,0]].T, diameters = [size])
+        self.coords = CalculateSANN(2, N, (self.size[1], self.size[0]),
+                                    self.locations.T[[1,0]].T, diameters=[size])
         return self.coords
         
         
     def binarize(self, thresh='auto'):
         """
-        Splits self.img in 2 groups based on a treshold. Alternatively the 
-        treshhold can be determined automatically
+        Split self.img in 2 groups based on a treshold.
 
         Parameters
         ----------
@@ -322,7 +320,7 @@ class realspace:
 
     def components(self):
         """
-        Finds all separate chunks that have the same intensity value. Makes a 
+        Find all separate chunks that have the same intensity value. Makes a 
         list of all (non-zero) chunks with all coordinates belonging to the
         chunk.
 
@@ -343,7 +341,7 @@ class realspace:
     
     def cutter(self, xmin, xmax, ymin, ymax):
         """
-        Cuts the image to a smaller size
+        Cut the image to a smaller size.
 
         Parameters
         ----------
@@ -373,7 +371,7 @@ class realspace:
     
     def save(self, filename):
         """
-        Saves current image under filename
+        Save the current image.
 
         Parameters
         ----------
@@ -388,15 +386,16 @@ class realspace:
         cv2.imwrite(filename, self.img)
     
     
-class realspacefromfile(realspace):
+class RealspaceFromFile(Realspace):
     def __init__(self, filename):
         """
-        several operations on realspace images
+        Several operations on realspace images, using a file  as input.
 
         Parameters
         ----------
         img : STR
-            Image filename (and location if in separate folder) including extension.
+            Image filename (and location if in separate folder) including
+            extension.
 
         Returns
         -------
@@ -405,7 +404,7 @@ class realspacefromfile(realspace):
         """
         self.filename = filename
         self.img = cv2.imread(filename)
-        realspace.__init__(self, self.img)
+        Realspace.__init__(self, self.img)
         
         
         
@@ -452,7 +451,7 @@ class Fourier:
     def show(self,  translate=True, logarithm=True,
              windowname="Fourier Transform", scale=0.2):
         """
-        Rescales and shows the magnitude of the Fourier transform
+        Rescale and show the magnitude of the Fourier transform
     
         Parameters
         ----------
@@ -492,7 +491,8 @@ class Fourier:
         newwidth = int(shape[0] * scale)
         newheight = int(shape[1] * scale)
         newshape = (newheight, newwidth)
-        resized = cv2.resize(normalization, newshape, interpolation=cv2.INTER_AREA)
+        resized = cv2.resize(normalization, newshape,
+                             interpolation=cv2.INTER_AREA)
         
         cv2.imshow(windowname, resized) 
         cv2.waitKey(0)
@@ -501,7 +501,7 @@ class Fourier:
     
     def save(self, filename, translate=True, logarithm=True):
         """
-        Rescales and saves the magnitude of the Fourier transform
+        Rescale and save the magnitude of the Fourier transform
     
         Parameters
         ----------
@@ -585,14 +585,14 @@ class Fourier:
     
         
 
-    def inverseDiscreteFourier(self):
+    def inversediscretefourier(self):
         """
         Do the inverse Fourier transform on a (already size-wise optimized) image
     
         Returns
         -------
-        newimg: realspace instance
-            Realspace instance that is the inverse Fourier transformed of self.data.
+        newimg: Realspace instance
+            Realspace instance that is the inverse Fourier transform of self.data.
     
         """
         
@@ -609,7 +609,7 @@ class Fourier:
         img = (np.round(magnitude)).astype('uint8')
         cv2.normalize(img, img, 0, 255, cv2.NORM_MINMAX)
         
-        newimg = realspace(img)
+        newimg = Realspace(img)
         
         return newimg
     
@@ -668,10 +668,11 @@ class Fourier:
         
         """
     
-        if center is None: # use the middle of the image
+        if center is None:
             center = (int(self.size[1]/2), int(self.size[0]/2))
-        if radius is None: # use the smallest distance between the center and image walls
-            radius = min(center[0], center[1], self.size[0]-center[1], self.size[1]-center[0])
+        if radius is None:
+            radius = min(center[0], center[1], self.size[0]-center[1],
+                         self.size[1]-center[0])
         
         
         Y, X = np.ogrid[:self.size[0], :self.size[1]]
@@ -714,7 +715,9 @@ class Fourier:
 
         Returns
         -------
-        None.
+        temp : numpy array (same size as input)
+            Array translated such that the [0,0] entry from the input is the 
+            middle entry in the output
 
         """
         shape = dataset.shape
@@ -732,24 +735,60 @@ class Fourier:
     
     
     
-class imageframes:
-    def __init__(self, path, namestart, skipfiles=0):
+class ImageFrames:
+    def __init__(self, path, namestart):
+        """
+        Several operations on a collection of images.
+        
+        The images should all be saved in the same folder. If there are other 
+        files in the folder that should not be read the filenames that should
+        be imported need to start with a common pattern, that is not matched by
+        any of the other files.
+
+        Parameters
+        ----------
+        path : STR
+            Path to the folder in which the images are stored.
+        namestart : STR
+            The common pattern that the filenames that should be imported start
+            with.
+
+        Returns
+        -------
+        None.
+
+        """
         self.imgs = []
         self.filenames = []
         for file in os.listdir(path):
             if file.startswith(namestart):
-                print(file[10:16])
+                #print(file[10:16])
                 foo = cv2.imread(path + file)
                 #print(type(foo))
-                foo = realspace(foo)
+                foo = Realspace(foo)
                 self.imgs.append(foo)
                 self.filenames.append(path + file)
         self._isgrey = False
                 
         
     def makegrayscale(self):
+        """
+        Convert all loaded images to graysale.
+
+        Raises
+        ------
+        ValueError
+            If the images are grayscale already they cannot be reentered into
+            this function.
+
+        Returns
+        -------
+        None.
+
+        """
         if self._isgrey:
-            raise ValueError('please first convert to greyscale image')
+            raise ValueError('Make sure to not input a grayscale image into'
+                             ' a grayscale maker')
         for img in self.imgs:
             img.makegrayscale()
         self._isgrey = True
@@ -765,6 +804,38 @@ class imageframes:
     
     
     def batchlocate(self, size, searchrange, dark=False, mem=3):
+        """
+        Locate and identify particles.
+        
+        Using the trackpy functions. Uses trackpy version 0.5.0
+        http://soft-matter.github.io/trackpy/v0.5.0
+        
+        Parameters
+        ----------
+        size : odd INT or TUPLE of odd INTs
+            Passed into 'diameter' parameter of tp.batch;
+            This may be a single number or a tuple giving the feature’s extent
+            in each dimension, useful when the dimensions do not have equal
+            resolution (e.g. confocal microscopy). The tuple order is the same
+            as the image shape, conventionally (z, y, x) or (y, x). The
+            number(s) must be odd integers. When in doubt, round up.
+        searchrange : INT or TUPLE of INTs
+            The maximum distance features can move between frames.
+        dark : BOOL, optional
+            Set to True if features are darker than background. The default is
+            False.
+            Note; the tp.locate option used to achieve this will be deprecated.
+        mem : TYPE, optional
+            The maximum number of frames during which a feature can vanish,
+            then reappear nearby, and be considered the same particle. The
+            default is 3.
+
+        Returns
+        -------
+        None.
+
+        """
+        
         print('load locations')
         frames = [foo.img for foo in self.imgs]
         self.alllocs = tp.batch(frames, size, invert=dark)
@@ -775,10 +846,40 @@ class imageframes:
         self.trajectories = tp.subtract_drift(self.connected.copy(), self.drift)
         
     def showtraject(self):
+        """
+        Show the trajectories of all the particles. Note; this is slow for
+        images with many particles.
+
+        Returns
+        -------
+        None.
+
+        """
         print('showing trajectories, might be somewhat slow')
         tp.plot_traj(self.trajectories)
 
     def msd(self, umperpx, fps, minimumlength=-1, show=True):
+        """
+        Determine the mean squared displacement of the collective.
+
+        Parameters
+        ----------
+        umperpx : float
+            Scale of the image.
+        fps : int
+            Frames per second.
+        minimumlength : int, optional
+            minimum lenght a trajectory should be to include it in averaging.
+            The default is -1, which includes only trajectories of particles
+            that are present in every frame.
+        show : BOOL, optional
+            Wether to show a graph of the result. The default is True.
+
+        Returns
+        -------
+        None.
+
+        """
         if minimumlength < 0:
             minimumlength = len(self.imgs)
         temp = tp.filter_stubs(self.trajectories, minimumlength)
@@ -788,7 +889,8 @@ class imageframes:
             ax.plot(self.ensemblemsd.index, self.ensemblemsd, 'o')
             ax.set_xscale('log')
             ax.set_yscale('log')
-            ax.set(ylabel=r'$\langle \Delta r^2 \rangle$ ($\mu$m$^2$)', xlabel='lag time $t$ ($s$)')
+            ax.set(ylabel=r'$\langle \Delta r^2 \rangle$ ($\mu$m$^2$)',
+                   xlabel='lag time $t$ ($s$)')
     
     
 

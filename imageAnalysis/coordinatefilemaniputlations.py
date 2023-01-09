@@ -7,7 +7,7 @@ Created on Wed Jan 12 14:30:18 2022
 
 import numpy as np
 
-class coordinateFileManipulation:
+class CoordinateFileManipulation:
     def __init__(self, filename):
         '''
         Setup a class to work with particle locations
@@ -33,7 +33,8 @@ class coordinateFileManipulation:
         self.diameterlist = [1]
         self.colorlist = ['']
         
-    def readFile(self):
+        
+    def readfile(self):
         '''
         Read the file in self.filename. If needed changes the particle
         coordinates to all be positive numbers.
@@ -43,7 +44,8 @@ class coordinateFileManipulation:
         None.
 
         '''
-        self.data1 = [i.strip().split() for i in open(self.filename).readlines()]
+        self.data1 = [i.strip().split() for i in
+                      open(self.filename).readlines()]
         self.N = int(self.data1[0][0])
         xmin = np.array(self.data1[1]).astype('float')[0]
         ymin = np.array(self.data1[2]).astype('float')[0]
@@ -51,7 +53,7 @@ class coordinateFileManipulation:
         self.xrange = np.array(self.data1[1]).astype('float')[1]
         self.yrange = np.array(self.data1[2]).astype('float')[1]
         self.zrange = np.array(self.data1[3]).astype('float')[1]
-        self.box = (self.xrange - xmin, self.yrange - ymin, self.zrange - zmin)
+        self.box = (self.xrange-xmin, self.yrange-ymin, self.zrange-zmin)
         dataset = np.array(self.data1[4:]).astype('float')
         self.particlelist = dataset[:,:3]
         self.particlelist[:,0] -= xmin
@@ -64,7 +66,7 @@ class coordinateFileManipulation:
             self.colorlist = [''] * self.N
         
         
-    def inputinfo(self, N, box, particlelist, diameterlist = [1], colorlist = ['']):
+    def inputinfo(self, N, box, particlelist, diameterlist=[1], colorlist=['']):
         '''
         Alternative way to input particle information
 
@@ -100,7 +102,8 @@ class coordinateFileManipulation:
         self.box = (self.xrange, self.yrange, self.zrange)
         if particlelist.shape[1] == 2:
             z = np.zeros(particlelist.shape[0])
-            particlelist = np.concatenate((particlelist, z[:,np.newaxis]), axis = 1)
+            particlelist = np.concatenate((particlelist, z[:,np.newaxis]),
+                                          axis=1)
         self.particlelist = particlelist
         if len(diameterlist) == 1:
             diameterlist = diameterlist * N
@@ -111,7 +114,7 @@ class coordinateFileManipulation:
         
         
         
-    def writeFile(self, **kwargs):
+    def writefile(self, **kwargs):
         """
         Write the file to self.filename. All parameters are optional and can
         only be called by name, not by position. If parameters are not given
@@ -157,7 +160,8 @@ class coordinateFileManipulation:
         particlelist = kwargs.pop('particlelist', self.particlelist)
         if particlelist.shape[1] == 2:
             z = np.zeros(particlelist.shape[0])
-            particlelist = np.concatenate((particlelist, z[:,np.newaxis]), axis = 1)
+            particlelist = np.concatenate((particlelist, z[:,np.newaxis]),
+                                          axis=1)
         box = kwargs.pop('box', self.box)
         if len(box) == 2:
             box = (box[0], box[1], 0.0)
@@ -176,13 +180,14 @@ class coordinateFileManipulation:
             for dim in box:
                 f.write("0.000000 \t " + str(dim) + "\n")
             for coords, diameter, color in zip(particlelist, diameters, colors):
-                f.write(str(coords[0]) + " \t " + str(coords[1]) + " \t " + str(coords[2]))
+                f.write(str(coords[0]) + " \t " + str(coords[1]) + " \t "
+                        + str(coords[2]))
                 f.write(" \t " + str(diameter) + " \t " + str(color) + " \n")
                 
                 
                 
                 
-    def removeParticles(self, requirement):
+    def removeparticles(self, requirement):
         """
         Remove particles that have 'requirement' as their color value.
 
@@ -202,14 +207,14 @@ class coordinateFileManipulation:
         colors = (colors == requirement)
         removal = np.sum(colors)
         N = self.N - removal
-        particlelist = np.zeros((N,3), dtype = 'float')
-        diameterlist = np.zeros(N, dtype = 'float')
-        colorlist = np.zeros(N, dtype = 'int')
+        particlelist = np.zeros((N,3), dtype='float')
+        diameterlist = np.zeros(N, dtype='float')
+        colorlist = np.zeros(N, dtype='int')
         
         pidout = 0
         pidin = 0
         while pidin < N and pidout < self.N:
-            if pidin % 1000 == 0:
+            if pidin%1000 == 0:
                 print(f'we\'re working on {pidout} of {self.N} particles')
             if colors[pidout] == 1:
                 pidout += 1
