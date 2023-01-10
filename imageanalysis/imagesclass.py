@@ -596,10 +596,6 @@ class Fourier:
         
         if center is None: # use the middle of the image
             center = (int(self.size[1]/2), int(self.size[0]/2))
-            
-        y, x = np.indices(self.size)
-        r = np.sqrt((x - center[0])**2 + (y - center[1])**2)
-        r = r.astype(int)
         
         real = np.array(self.data[:,:,0])
         compl = np.array(self.data[:,:,1])
@@ -611,6 +607,10 @@ class Fourier:
         if logarithm:
             logmag = np.log(magnitude + 1)
             magnitude = logmag
+            
+        y, x = np.indices(magnitude.size)
+        r = np.sqrt((x - center[0])**2 + (y - center[1])**2)
+        r = r.astype(int)
         
         tbin = np.bincount(r.ravel(), magnitude.ravel())
         nr = np.bincount(r.ravel())
