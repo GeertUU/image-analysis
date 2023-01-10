@@ -339,6 +339,51 @@ class Realspace:
             self.particlelist[i] = goal
             
     
+    def radialprofile(self, center=None, translate=True, logarithm=True):
+        """
+        Calculate the radial average of pixel magnitudes.
+
+        Parameters
+        ----------
+        center : Tuple of 2 ints, optional
+            Center point of the circle. Defaults to origin of the Fourierspace.
+            The default is None.
+        translate : BOOLEAN, optional
+            Translate to the middle of the image? The default is True.
+        logarithm : BOOLEAN, optional
+            Rescale values logarithmically? The default is True.
+
+        Returns
+        -------
+        radialprofile : numpy array
+            Array with radially averaged pixel values.
+
+        """
+        
+        if center is None: # use the middle of the image
+            center = (int(self.size[1]/2), int(self.size[0]/2))
+            
+        y, x = np.indices(self.size)
+        r = np.sqrt((x - center[0])**2 + (y - center[1])**2)
+        r = r.astype(int)
+        
+        real = np.array(self.data[:,:,0])
+        compl = np.array(self.data[:,:,1])
+        magnitude = np.sqrt(real**2 + compl**2)
+        
+        if translate:
+            magnitude = self.reorient(magnitude)
+        
+        if logarithm:
+            logmag = np.log(magnitude + 1)
+            magnitude = logmag
+        
+        tbin = np.bincount(r.ravel(), magnitude.ravel())
+        nr = np.bincount(r.ravel())
+        radialprofile = tbin / nr
+        return radialprofile 
+ 
+    
     def cutter(self, xmin, xmax, ymin, ymax):
         """
         Cut the image to a smaller size.
