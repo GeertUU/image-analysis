@@ -608,7 +608,7 @@ class Fourier:
             logmag = np.log(magnitude + 1)
             magnitude = logmag
             
-        y, x = np.indices(magnitude.size)
+        y, x = np.indices(magnitude.shape)
         r = np.sqrt((x - center[0])**2 + (y - center[1])**2)
         r = r.astype(int)
         
