@@ -3,14 +3,14 @@ from setuptools import setup, find_packages
 
 
 setup(
-    name = 'imageAnalysis',
-    version = '1.1.0',
+    name = 'imageanalysis',
+    version = '1.1.1',
 
     url='https://github.com/GeertUU/image-analysis',
     author='Geert',
     author_email='g.h.a.schulpen@uu.nl',
 
-    packages=find_packages(include=["imageAnalysis", "imageAnalysis.*"]),
+    packages=find_packages(include=["imageanalysis", "imageanalysis.*"]),
     
     install_requires=[
         'numpy',

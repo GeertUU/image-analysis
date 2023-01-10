@@ -7,7 +7,7 @@ Created on Wed Jan 12 17:22:42 2022
 
 
 
-from .coordinatefilemaniputlations import coordinateFileManipulation
+from imageanalysis.coordinatefilemaniputlations import CoordinateFileManipulation
 import numpy as np
 from operator import itemgetter
 
@@ -17,35 +17,35 @@ from scipy.spatial import KDTree
     
 
 
-class calculateSANN:
+class CalculateSANN:
     
-    cbrt2 = np.cbrt(2)
-    root2 = np.sqrt(2)
-    sinpi8 = np.sin(np.pi/8)
-    cospi8 = np.cos(np.pi/8)
+    _cbrt2 = np.cbrt(2)
+    _root2 = np.sqrt(2)
+    _sinpi8 = np.sin(np.pi/8)
+    _cospi8 = np.cos(np.pi/8)
     
-    amsin = np.arccos(0.5 * (1.0 - sinpi8));
-    apsin = np.arccos(0.5 * (1.0 + sinpi8));
-    amcos = np.arccos(0.5 * (1.0 - cospi8));
-    apcos = np.arccos(0.5 * (1.0 + cospi8));
-    msin = (1.0 - root2 - 2.0 * (cospi8 - sinpi8)) * amsin;
-    psin = (1.0 - root2 + 2.0 * (cospi8 - sinpi8)) * apsin;
-    mcos = (1.0 + root2 + 2.0 * (cospi8 + sinpi8)) * amcos;
-    pcos = (1.0 + root2 - 2.0 * (cospi8 + sinpi8)) * apcos;
-    pre0 = 0.25 * (mcos + msin + pcos + psin);
+    _amsin = np.arccos(0.5*(1.0 - _sinpi8));
+    _apsin = np.arccos(0.5*(1.0 + _sinpi8));
+    _amcos = np.arccos(0.5*(1.0 - _cospi8));
+    _apcos = np.arccos(0.5*(1.0 + _cospi8));
+    _msin = (1.0 - _root2 - 2.0*(_cospi8 - _sinpi8))*_amsin;
+    _psin = (1.0 - _root2 + 2.0*(_cospi8 - _sinpi8))*_apsin;
+    _mcos = (1.0 + _root2 + 2.0*(_cospi8 + _sinpi8))*_amcos;
+    _pcos = (1.0 + _root2 - 2.0*(_cospi8 + _sinpi8))*_apcos;
+    _pre0 = 0.25*(_mcos + _msin + _pcos + _psin);
     
-    msin = ( 2.0 * root2 + 9.0 * cospi8 - sinpi8) * amsin;
-    psin = ( 2.0 * root2 - 9.0 * cospi8 + sinpi8) * apsin;
-    mcos = (-2.0 * root2 - cospi8 - 9.0 * sinpi8) * amcos;
-    pcos = (-2.0 * root2 + cospi8 + 9.0 * sinpi8) * apcos;
-    pre1 = mcos + msin + pcos + psin;
+    _msin = ( 2.0*_root2 + 9.0*_cospi8 - _sinpi8)*_amsin;
+    _psin = ( 2.0*_root2 - 9.0*_cospi8 + _sinpi8)*_apsin;
+    _mcos = (-2.0*_root2 - _cospi8 - 9.0*_sinpi8)*_amcos;
+    _pcos = (-2.0*_root2 + _cospi8 + 9.0*_sinpi8)*_apcos;
+    _pre1 = _mcos + _msin + _pcos + _psin;
     
-    msin = ( -root2 - 12.0 * cospi8) * amsin;
-    psin = ( -root2 + 12.0 * cospi8) * apsin;
-    mcos = (  root2 + 12.0 * sinpi8) * amcos;
-    pcos = (  root2 - 12.0 * sinpi8) * apcos;
-    pre2 = 2.0 * (mcos + msin + pcos + psin);
-    pre3 = 16.0 * (cospi8 * (amsin - apsin) + sinpi8 * (apcos - amcos));
+    _msin = (-_root2 - 12.0*_cospi8)*_amsin;
+    _psin = (-_root2 + 12.0*_cospi8)*_apsin;
+    _mcos = ( _root2 + 12.0*_sinpi8)*_amcos;
+    _pcos = ( _root2 - 12.0*_sinpi8)*_apcos;
+    _pre2 = 2.0*(_mcos + _msin + _pcos + _psin);
+    _pre3 = 16.0*(_cospi8*(_amsin - _apsin) + _sinpi8*(_apcos - _amcos));
     
     
 
@@ -106,19 +106,20 @@ class calculateSANN:
 
         '''
         
-        self.neighborparticles = np.full((self.N, self.N), -1, dtype = 'int')
+        self.neighborparticles = np.full((self.N, self.N), -1, dtype='int')
         self.distanceMatrix = np.zeros((self.N, self.N))
-        alreadyfound = np.zeros(self.N, dtype = 'int')        
+        alreadyfound = np.zeros(self.N, dtype='int')        
         
         for i, loci in enumerate(self.particles):
             counter = alreadyfound[i]
-            if i % 1000 == 0:
-                print("working on particle", i, "of", self.N, "found", counter, "neighbors so far")
+            if i%1000 == 0:
+                print("working on particle", i, "of", self.N, "found", counter,
+                      "neighbors so far")
             for j, locj in enumerate(self.particles[i + 1:]):
-                j += i + 1
+                j += i+1
                 deltaR2 = 0
                 for dist1d, maxlenght in zip(loci-locj, self.box[:self.NDIM]):
-                    dist1d -= maxlenght * int(2 * dist1d/ maxlenght )
+                    dist1d -= maxlenght * int(2 * dist1d/maxlenght )
                     deltaR2 += dist1d**2
                 deltaRabs = np.sqrt(deltaR2)
                 self.distanceMatrix[i, j] = deltaRabs
@@ -132,7 +133,7 @@ class calculateSANN:
                     
                     
     
-    def rmisolver(self, m, sumr, sumr2, sumr3):
+    def _rmisolver(self, m, sumr, sumr2, sumr3):
         """
         Calculate the Rmi for 2d SANN
     
@@ -153,22 +154,25 @@ class calculateSANN:
             Rmi needed in 2d SANN determination.
     
         """
-        a = calculateSANN.pre3 * sumr3
-        b = calculateSANN.pre2 * sumr2
-        c = calculateSANN.pre1 * sumr
-        d = calculateSANN.pre0 * m - np.pi
+        a = CalculateSANN._pre3 * sumr3
+        b = CalculateSANN._pre2 * sumr2
+        c = CalculateSANN._pre1 * sumr
+        d = CalculateSANN._pre0 * m - np.pi
         
-        tbdmcc = 3*b*d-c*c
+        tbdmcc = 3*b*d - c*c
         inner = (9*b*c*d - 27*a*d*d - 2*c*c*c);
-        sqrtpart = np.sqrt(inner*inner + 4 * tbdmcc*tbdmcc*tbdmcc )
+        sqrtpart = np.sqrt(inner*inner + 4*tbdmcc*tbdmcc*tbdmcc )
         cuberootpart = np.cbrt(sqrtpart + inner)
-        rmi = cuberootpart/(3 * calculateSANN.cbrt2 * d) - (calculateSANN.cbrt2 * tbdmcc)/(3 * d * cuberootpart) - c/(3.0 * d)
+        rmi = (cuberootpart/(3 * CalculateSANN._cbrt2 * d)
+               - (CalculateSANN._cbrt2 * tbdmcc)/(3 * d * cuberootpart)
+               - c/(3.0 * d)
+               )
     
         return(rmi)
     
     
     
-    def SANN2d(self):
+    def sann2d(self):
         '''
         Does the main part of the SANN algorithm. Can only be called after
         self.verlet() has been called.
@@ -179,7 +183,8 @@ class calculateSANN:
         each particle and self.Rmilist with the Rmi for each particle.
 
         '''
-        for i, (pids, dist) in enumerate(zip(self.neighborparticles, self.distanceMatrix)):
+        for i, (pids, dist) in enumerate(zip(self.neighborparticles,
+                                             self.distanceMatrix)):
             datalist = self.dataarray[i] = []
             for j, particle in enumerate(pids):
                 distance = dist[particle]
@@ -190,7 +195,7 @@ class calculateSANN:
                     datalist.append((particle, distance))
             
             
-            datalist.sort(key = itemgetter(1))
+            datalist.sort(key=itemgetter(1))
             if amount < 3:
                 self.numberNNlist[i] = 0#-1
                 self.Rmilist[i] = -1
@@ -208,7 +213,7 @@ class calculateSANN:
                 m += 1
                 
                 while (m < amount):
-                    Rmi = self.rmisolver(m, sumr, sumr2, sumr3)
+                    Rmi = self._rmisolver(m, sumr, sumr2, sumr3)
                     if Rmi < datalist[m][1]:
                         self.numberNNlist[i] = m
                         self.Rmilist[i] = Rmi
@@ -223,7 +228,7 @@ class calculateSANN:
                     self.numberNNlist[i] = 0#-2
                     self.Rmilist[i] = Rmi
     
-    def SANNtree2d(self, amount = 25):
+    def sanntree2d(self, amount=25):
         """
         Calculates SANN using a kdtree. Uses no periodic boundary conditions.
 
@@ -241,7 +246,7 @@ class calculateSANN:
 
         """
         for i, loci in enumerate(self.particles):
-            dists, ids = self.tree.query(loci, k = amount)
+            dists, ids = self.tree.query(loci, k=amount)
             
             sumr = 0
             sumr2 = 0
@@ -270,41 +275,41 @@ class calculateSANN:
                 self.Rmilist[i] = Rmi
     
     
-    def SANN3d(self):
+    def sann3d(self):
         '''
         to be filled with 3d SANN algorithm
         '''
         pass
-    def SANNtree3d(self):
+    def sanntree3d(self):
         '''
         to be filled with 3d SANN algorithm
         '''
         pass
     
     
-    def SANNtree(self):
+    def sanntree(self):
         '''
         Calculates SANN using kd tree, thus using no periodic boundaries.
         Automatically determines 2d or 3d, however, only 2d is implemented.
         Sets up self.numberNNlist and self.Rmilist to receive the output.
         '''
-        self.numberNNlist = np.zeros(self.N, dtype = 'int')
-        self.Rmilist = np.zeros(self.N, dtype = 'float')
+        self.numberNNlist = np.zeros(self.N, dtype='int')
+        self.Rmilist = np.zeros(self.N, dtype='float')
         
         if self.NDIM == 2:
             self.SANNtree2d()
         if self.NDIM == 3:
             self.SANNtree3d()
     
-    def SANN(self):
+    def sann(self):
         '''
         Calculates SANN using periodic boundaries. Call only after calling
         self.verlet(). Automatically determines 2d or 3d, however, only 2d is
         implemented. Sets up self.numberNNlist and self.Rmilist.
         '''
         
-        self.numberNNlist = np.zeros(self.N, dtype = 'int')
-        self.Rmilist = np.zeros(self.N, dtype = 'float')
+        self.numberNNlist = np.zeros(self.N, dtype='int')
+        self.Rmilist = np.zeros(self.N, dtype='float')
         self.dataarray = [0]*self.N
         
         if self.NDIM == 2:
@@ -313,7 +318,7 @@ class calculateSANN:
             self.SANN3d()
                         
             
-    def printsann(self, filename, remove0 = False):
+    def printsann(self, filename, remove0=False):
         '''
         Write a file with the SANN results stored as colors.
 
@@ -345,8 +350,9 @@ class calculateSANN:
         ....
 
         '''
-        self.myfile = coordinateFileManipulation(filename)
-        self.myfile.inputinfo(self.N, self.box, self.particles, colorlist = self.numberNNlist)
+        self.myfile = CoordinateFileManipulation(filename)
+        self.myfile.inputinfo(self.N, self.box, self.particles,
+                              colorlist=self.numberNNlist)
         self.myfile.rearrangecolumn(1)
         if not remove0:
             self.myfile.writeFile(**self.kwargs)
@@ -360,7 +366,7 @@ class calculateSANN:
 
 
 
-class fromfileSANN(calculateSANN):
+class FromFileSANN(CalculateSANN):
     def __init__(self, myfile, **kwargs):
         '''
         Class to calculate the approximate 2d SANN nearest neighbors. Ask
@@ -379,19 +385,19 @@ class fromfileSANN(calculateSANN):
         None.
 
         '''
-        self.myfile = coordinateFileManipulation(myfile)
-        self.myfile.readFile()
+        self.myfile = CoordinateFileManipulation(myfile)
+        self.myfile.readfile()
         
         self.N = self.myfile.N
         self.box = self.myfile.box
         self.particles = self.myfile.particlelist
         self.kwargs = kwargs
         
-        self.findNDIM()
+        self.findndim()
         self.tree = KDTree(self.particles)
         
         
-    def findNDIM(self):
+    def findndim(self):
         """
         Find number of dimensions for a coordinate file.
 

@@ -1,10 +1,10 @@
-# imageAnalysis
+# imageanalysis
 Set of functions for dealing with image data based around the python packages opencv and trackpy
 
 ## Info
 - Created by: Geert Schulpen
 - Email: g.h.a.schulpen@uu.nl
-- Version: 1.1.0
+- Version: 1.1.1
 
 
 ## Installation
