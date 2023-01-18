@@ -65,7 +65,7 @@ class CalculateSANN:
     def __init__(self, NDIM, N, box, particles, **kwargs):
         '''
         Class to calculate the approximate 2d SANN nearest neighbors. Ask
-        Apltug if you need actual 2d SANN. Extension to 3d SANN could be
+        Alptug if you need actual 2d SANN. Extension to 3d SANN could be
         implemented.
 
         Parameters
