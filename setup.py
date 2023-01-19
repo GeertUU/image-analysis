@@ -35,6 +35,6 @@ setup(
         'scipy',
         'matplotlib',
         'opencv-python',
-        'trackpy',
+        'trackpy==0.5.0',
     ],
 )
