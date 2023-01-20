@@ -22,7 +22,7 @@ from setuptools import setup, find_packages
 
 setup(
     name = 'imageanalysis',
-    version = '1.1.5',
+    version = '1.1.6',
 
     url='https://github.com/GeertUU/image-analysis',
     author='Geert',
@@ -35,6 +35,6 @@ setup(
         'scipy',
         'matplotlib',
         'opencv-python',
-        'trackpy',
+        'trackpy==0.5.0',
     ],
 )

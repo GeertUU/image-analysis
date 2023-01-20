@@ -65,7 +65,7 @@ class CalculateSANN:
     def __init__(self, NDIM, N, box, particles, **kwargs):
         '''
         Class to calculate the approximate 2d SANN nearest neighbors. Ask
-        Apltug if you need actual 2d SANN. Extension to 3d SANN could be
+        Alptug if you need actual 2d SANN. Extension to 3d SANN could be
         implemented.
 
         Parameters
@@ -378,7 +378,7 @@ class CalculateSANN:
 
 
 class FromFileSANN(CalculateSANN):
-    def __init__(self, myfile, **kwargs):
+    def __init__(self, filename, **kwargs):
         '''
         Class to calculate the approximate 2d SANN nearest neighbors. Ask
         Apltug if you need actual 2d SANN. Extension to 3d SANN could be
@@ -396,7 +396,7 @@ class FromFileSANN(CalculateSANN):
         None.
 
         '''
-        self.myfile = CoordinateFileManipulation(myfile)
+        self.myfile = CoordinateFileManipulation(filename)
         self.myfile.readfile()
         
         self.N = self.myfile.N

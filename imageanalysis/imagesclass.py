@@ -285,8 +285,8 @@ class Realspace:
 
         Returns
         -------
-        coords : instance of calculateSANN
-            Detected particle coordinates in the calculateSANN class.
+        coords : instance of CalculateSANN
+            Detected particle coordinates in the CalculateSANN class.
 
         """
         if not self._isgrey:
@@ -500,9 +500,6 @@ class Fourier:
     
         Parameters
         ----------
-        complexI : 3d numpy array (>=n, >=m, 2)
-            an array with the real and complex parts of the Fourier Transform
-            of an image
         translate : BOOLEAN, optional
             Translate to the middle of the image? The default is True.
         logarithm : BOOLEAN, optional
@@ -839,6 +836,19 @@ class ImageFrames:
         self._isgrey = True
             
     def difference(self, src2):
+        """
+        Take the difference between each image and a commmon background.
+
+        Parameters
+        ----------
+        src2 : STR
+            Path, filename and extension of the image to be used as background.
+
+        Returns
+        -------
+        None.
+
+        """
         myback = cv2.imread(src2)
         if self._isgrey:
             myback = cv2.cvtColor(myback, cv2.COLOR_BGR2GRAY)
@@ -914,7 +924,7 @@ class ImageFrames:
         fps : int
             Frames per second.
         minimumlength : int, optional
-            minimum lenght a trajectory should be to include it in averaging.
+            minimum length a trajectory should be to include it in averaging.
             The default is -1, which includes only trajectories of particles
             that are present in every frame.
         show : BOOL, optional
