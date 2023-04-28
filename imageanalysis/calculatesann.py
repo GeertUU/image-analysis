@@ -451,7 +451,7 @@ class FromFileSANN(CalculateSANN):
         ....
         '''
         self.myfile.filename = filename
-        self.myfile.writeFile(colors = self.numberNNlist)
+        self.myfile.writefile(colors = self.numberNNlist)
         
 
 
