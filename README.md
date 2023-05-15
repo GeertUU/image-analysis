@@ -4,7 +4,7 @@ Set of functions for dealing with image data based around the python packages op
 ## Info
 - Created by: Geert Schulpen
 - Email: g.h.a.schulpen@uu.nl
-- Version: 1.1.7
+- Version: 1.1.8
 
 
 ## Installation
