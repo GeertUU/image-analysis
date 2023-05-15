@@ -366,10 +366,10 @@ class CalculateSANN:
                               colorlist=self.numberNNlist)
         self.myfile.rearrangecolumn(1)
         if not remove0:
-            self.myfile.writeFile(**self.kwargs)
+            self.myfile.writefile(**self.kwargs)
         else:
             self.myfile.removeParticles(0)
-            self.myfile.writeFile(**self.kwargs)
+            self.myfile.writefile(**self.kwargs)
 
         
 

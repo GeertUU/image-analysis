@@ -16,7 +16,7 @@
 '''
 
 
-__version__ = '1.1.7'
+__version__ = '1.1.8'
 
 from imageanalysis.coordinatefilemaniputlations import CoordinateFileManipulation
 from imageanalysis.calculatesann import CalculateSANN, FromFileSANN
