@@ -22,7 +22,7 @@ from setuptools import setup, find_packages
 
 setup(
     name = 'imageanalysis',
-    version = '1.1.8',
+    version = '1.1.9',
 
     url='https://github.com/GeertUU/image-analysis',
     author='Geert',

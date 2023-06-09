@@ -295,8 +295,8 @@ class Realspace:
                                  maxsize=maxSize, invert=dark)
         N = len(self.locdata)
         self.locations = np.zeros((N,2), dtype = 'float')
-        for index, (_, loc) in enumerate(self.locdata.T.iteritems()):
-            place = [dim for _, dim in loc.iloc[:2].iteritems()]
+        for index, (_, loc) in enumerate(self.locdata.T.items()):
+            place = [dim for _, dim in loc.iloc[:2].items()]
             self.locations[index] = place
         self.coords = CalculateSANN(2, N, (self.size[1], self.size[0]),
                                     self.locations.T[[1,0]].T, diameters=[size])
